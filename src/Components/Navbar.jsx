@@ -1,29 +1,101 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <nav className="flex justify-between items-center px-8 py-4 bg-white bg-opacity-80 shadow-md font-poppins">
+    <nav className="flex justify-between items-center px-4 sm:px-8 py-4 bg-white bg-opacity-90 shadow-md font-poppins relative">
       <div className="text-2xl font-bold text-slate-800">SparkNest</div>
-      <ul className="flex gap-6 text-slate-700 font-medium text-base">
-        <li className='hover:scale-110 transition-transform duration-300'>
-          <Link to='/' className='hover:text-blue-700'>Home</Link>
+
+      {/* Desktop nav */}
+      <ul className="hidden lg:flex gap-6 text-slate-700 font-medium text-base">
+        <li className="hover:scale-110 transition-transform duration-300">
+          <Link to="/" className="hover:text-blue-700">Home</Link>
         </li>
-        <li className='hover:scale-110 transition-transform duration-300'>
-          <Link to='/profile' className='hover:text-blue-700'>Profile</Link>
+        <li className="hover:scale-110 transition-transform duration-300">
+          <Link to="/profile" className="hover:text-blue-700">Profile</Link>
         </li>
-        <li className='hover:scale-110 transition-transform duration-300'>
-          <Link to='/create-post' className='hover:text-blue-700'>Create</Link>
+        <li className="hover:scale-110 transition-transform duration-300">
+          <Link to="/create-post" className="hover:text-blue-700">Create</Link>
         </li>
-        <li className='hover:scale-110 transition-transform duration-300'>
-          <Link to='/terms' className='hover:text-blue-700'>Terms</Link>
+        <li className="hover:scale-110 transition-transform duration-300">
+          <Link to="/terms" className="hover:text-blue-700">Terms</Link>
         </li>
       </ul>
-      <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 font-semibold cursor-pointer">
-        Login
+
+      {/* Desktop CTA */}
+      <div className="hidden lg:block">
+        <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 font-semibold cursor-pointer">
+          <Link to="/register">Get Started</Link>
+        </button>
+      </div>
+
+      {/* Mobile: hamburger */}
+      <button
+        className="lg:hidden p-2 rounded-md text-slate-700 hover:bg-gray-100"
+        aria-label="Toggle menu"
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen((s) => !s)}
+      >
+        {/* Toggle between hamburger and X icon */}
+        {menuOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z" />
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" />
+          </svg>
+        )}
       </button>
+
+      {/* Mobile overlay */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={closeMenu}
+          aria-hidden
+        />
+      )}
+
+      {/* Mobile panel */}
+      <aside
+        className={`fixed top-0 right-0 z-50 h-full w-64 sm:w-72 bg-white shadow-xl p-6 transform transition-transform duration-300 lg:hidden ${menuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="flex items-center justify-between">
+          <div className="text-lg font-bold text-slate-800">SparkNest</div>
+          <button
+            className="p-2 rounded-md text-slate-700 hover:bg-gray-100"
+            aria-label="Close menu"
+            onClick={closeMenu}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z" />
+            </svg>
+          </button>
+        </div>
+
+        <nav className="mt-8 flex flex-col gap-4">
+          <Link to="/" onClick={closeMenu} className="text-slate-700 font-medium hover:text-blue-700">Home</Link>
+          <Link to="/profile" onClick={closeMenu} className="text-slate-700 font-medium hover:text-blue-700">Profile</Link>
+          <Link to="/create-post" onClick={closeMenu} className="text-slate-700 font-medium hover:text-blue-700">Create</Link>
+          <Link to="/terms" onClick={closeMenu} className="text-slate-700 font-medium hover:text-blue-700">Terms</Link>
+        </nav>
+
+        <div className="mt-6">
+          <button className="bg-black text-white px-4 py-2 rounded-md w-full font-semibold" onClick={closeMenu}>
+            <Link to="/register">Get Started</Link>
+          </button>
+        </div>
+      </aside>
     </nav>
   )
-} 
+}
 
 export default Navbar;
