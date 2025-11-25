@@ -1,10 +1,18 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
   return (
     <nav className="flex justify-between items-center px-4 sm:px-8 py-4 bg-white bg-opacity-90 shadow-md font-poppins relative">
@@ -90,7 +98,7 @@ const Navbar = () => {
 
         <div className="mt-6">
           <button className="bg-black text-white px-4 py-2 rounded-md w-full font-semibold" onClick={closeMenu}>
-            <Link to="/register">Get Started</Link>
+            <Link to="/register" onClick={loading}>Get Started</Link>
           </button>
         </div>
       </aside>
