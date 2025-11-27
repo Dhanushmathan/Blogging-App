@@ -1,6 +1,17 @@
+import { useNavigate } from 'react-router-dom';
 import PostCard from '../Components/PostCard';
+import { useEffect } from 'react';
+import { getToken } from '../Services/auth';
 
 const Home = () => {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!getToken()) {
+      navigate("/login");
+    }
+  }, []);
 
   const posts = [
     {
