@@ -17,15 +17,11 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await loginUser(form);
-      console.log(res);
-
       setToken(res.data.token);
       setCurrentUser(res.data.user);
       toast.success("Login Successfully!");
       navigate("/");
     } catch (error) {
-      console.log(error);
-
       toast.error(`Login failed: ${error.response.data}`, {
         position: 'bottom-right',
         autoClose: 3000,

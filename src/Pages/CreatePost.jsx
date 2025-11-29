@@ -1,9 +1,10 @@
 import { useState } from 'react'
 
 const CreatePost = () => {
-
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   const handleImage = (e) => {
     const file = e.target.files[0];
@@ -11,9 +12,13 @@ const CreatePost = () => {
     setPreview(URL.createObjectURL(file));
   };
 
+  const handleSubmit = (e) => {
+    
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-10">
-      <div className="max-w-3xl mx-auto bg-white p-4 md:p-8 rounded-xl shadow-lg">
+      <form className="max-w-3xl mx-auto bg-white p-4 md:p-8 rounded-xl shadow-lg">
         <h1 className="text-3xl font-bold mb-6">Create New Post</h1>
 
         {/* Image Upload */}
@@ -53,7 +58,7 @@ const CreatePost = () => {
         <button className="w-full bg-blue-500 text-white py-3 rounded-lg font-bold hover:bg-blue-600">
           Publish Post
         </button>
-      </div>
+      </form>
     </div>
   )
 }
