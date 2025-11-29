@@ -1,21 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCurrentUser } from '../context/UserContext';
 
 const Navbar = () => {
+  const { currentUser } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   const closeMenu = () => setMenuOpen(false);
 
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  }, []);
+  const profilePage = () => {
+    navigate('/profile');
+  }
 
   return (
-    <nav className="flex justify-between items-center px-4 sm:px-8 py-4 bg-white bg-opacity-90 shadow-md font-poppins relative">
+    <nav className="flex justify-between items-center px-4 sm:px-8 py-3 bg-white bg-opacity-90 shadow-md font-poppins relative">
       <div className="text-2xl font-bold text-slate-800">SparkNest</div>
 
       {/* Desktop nav */}
@@ -35,11 +33,21 @@ const Navbar = () => {
       </ul>
 
       {/* Desktop CTA */}
-      <div className="hidden lg:block">
-        <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 font-semibold cursor-pointer">
-          <Link to="/register">Get Started</Link>
-        </button>
-      </div>
+      {
+        currentUser ? (
+          <div className="hidden lg:block">
+            <div className='w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 cursor-pointer'>
+              <img src={currentUser.profileImageUrl} alt="profile image" className='w-full h-full object-cover' onClick={profilePage} />
+            </div>
+          </div>
+        ) : (
+          <div className="hidden lg:block">
+            <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-900 font-semibold cursor-pointer">
+              <Link to="/register">Get Started</Link>
+            </button>
+          </div>
+        )
+      }
 
       {/* Mobile: hamburger */}
       <button
@@ -95,12 +103,24 @@ const Navbar = () => {
           <Link to="/create-post" onClick={closeMenu} className="text-slate-700 font-medium hover:text-blue-700">Create</Link>
           <Link to="/terms" onClick={closeMenu} className="text-slate-700 font-medium hover:text-blue-700">Terms</Link>
         </nav>
-
-        <div className="mt-6">
-          <button className="bg-black text-white px-4 py-2 rounded-md w-full font-semibold" onClick={closeMenu}>
-            <Link to="/register" onClick={loading}>Get Started</Link>
-          </button>
-        </div>
+        {
+          currentUser ? (
+            <div className="flex items-center space-x-2 mt-6 bg-gray-200 px-2 py-1 rounded-md">
+              <div className='w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 cursor-pointer'>
+                <img src={currentUser.profileImageUrl} alt="profile image" className='w-full h-full object-cover' onClick={profilePage} />
+              </div>
+              <div>
+                <p className='font-semibold'>{currentUser.name}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <button className="bg-black text-white px-4 py-2 rounded-md w-full font-semibold" onClick={closeMenu}>
+                <Link to="/register">Get Started</Link>
+              </button>
+            </div>
+          )
+        }
       </aside>
     </nav>
   )
