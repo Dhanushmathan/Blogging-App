@@ -135,7 +135,7 @@ const Terms = () => {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             <p className="text-slate-500">If you have any questions about these terms, please contact us.</p>
             <div className="flex gap-1 md:gap-3">
               <a
@@ -154,7 +154,7 @@ const Terms = () => {
           </div>
         </div>
 
-        <div className="absolute left-6 bottom-1 text-xs text-slate-400">Last updated: 2025-01-01</div>
+        <div className="absolute left-25 bottom-1 text-xs text-slate-400">Last updated: 2025-01-01</div>
       </div>
     </div>
   )
