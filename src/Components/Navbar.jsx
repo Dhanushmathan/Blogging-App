@@ -1,16 +1,28 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom';
 import { useCurrentUser } from '../context/UserContext';
 
 const Navbar = () => {
   const { currentUser } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const popupRef = useRef(null);
   const closeMenu = () => setMenuOpen(false);
 
-  const profilePage = () => {
-    navigate('/profile');
-  }
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [menuOpen]);
 
   return (
     <nav className="flex justify-between items-center px-4 sm:px-8 py-3 bg-white bg-opacity-90 shadow-md font-poppins relative">
@@ -32,13 +44,34 @@ const Navbar = () => {
         </li>
       </ul>
 
-      {/* Desktop CTA */}
       {
         currentUser ? (
-          <div className="hidden lg:block">
-            <div className='w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 cursor-pointer'>
-              <img src={currentUser.profileImageUrl} alt="profile image" className='w-full h-full object-cover' onClick={profilePage} />
+          <div className="hidden lg:block relative">
+            <div
+              className='w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 cursor-pointer hover:border-blue-700'
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-expanded={menuOpen}
+              aria-modal="true"
+              aria-label="Toggle menu"
+            >
+              <img src={currentUser.profileImageUrl} alt="profile image" className='w-full h-full object-cover' />
             </div>
+
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg p-4 z-50" ref={popupRef}>
+                <p className='font-semibold text-slate-800 mb-2'>{currentUser.name}</p>
+                <hr />
+                <button
+                  className="w-full mt-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 cursor-pointer font-semibold"
+                  onClick={() => {
+                    // Add logout logic here
+                    setMenuOpen(false);
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="hidden lg:block">
@@ -56,7 +89,6 @@ const Navbar = () => {
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((s) => !s)}
       >
-        {/* Toggle between hamburger and X icon */}
         {menuOpen ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z" />
@@ -107,7 +139,7 @@ const Navbar = () => {
           currentUser ? (
             <div className="flex items-center space-x-2 mt-6 bg-gray-200 px-2 py-1 rounded-md">
               <div className='w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 cursor-pointer'>
-                <img src={currentUser.profileImageUrl} alt="profile image" className='w-full h-full object-cover' onClick={profilePage} />
+                <img src={currentUser.profileImageUrl} alt="profile image" className='w-full h-full object-cover' />
               </div>
               <div>
                 <p className='font-semibold'>{currentUser.name}</p>
