@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { createPost, getAllCategories, getToken } from '../Services/api';
+import { getAllCategories, getToken } from '../Services/api';
 import { toast } from 'react-toastify';
 import { useCurrentUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { createPost } from '../Services/post';
 
 const CreatePost = () => {
   const { currentUser } = useCurrentUser();
@@ -49,8 +50,7 @@ const CreatePost = () => {
     try {
       setIsLoading(true);
       const res = await createPost(currentUser.id, categoryId, formData, getToken());
-      console.log(res.data);
-      toast.success("Post created successfully!", {
+      toast.success(`Post created successfully: ${res.data.title}`, {
         position: 'bottom-right',
         autoClose: 3000,
       });
