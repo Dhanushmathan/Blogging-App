@@ -2,7 +2,8 @@ import { useState } from 'react';
 import PostCard from '../Components/PostCard';
 import { useCurrentUser } from '../context/UserContext';
 import { getToken, uploadProfileImage, updateUserProfile } from '../Services/api';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import defaultProfile from '../assets/img/defaultProfile.png';
 
 const Profile = () => {
 
@@ -24,7 +25,10 @@ const Profile = () => {
 
       const res = await uploadProfileImage(currentUser.id, formData, getToken());
       setCurrentUser({ ...currentUser, profileImageUrl: res.data });
-      toast.success("Profile image updated successfully!");
+      toast.success("Profile image updated successfully!", {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
     } catch (error) {
       toast.error(`Image upload failed: ${error.response.data}`, {
         position: 'bottom-right',
@@ -71,7 +75,7 @@ const Profile = () => {
         <div className="bg-white p-4 md:p-8 rounded-xl shadow-lg mb-10 flex flex-col md:flex-row items-center gap-3.5 md:gap-6">
           <div className='w-36 h-36 md:w-32 md:h-32 rounded-full border border-green-400 overflow-hidden'>
             <img
-              src={currentUser?.profileImageUrl}
+              src={currentUser?.profileImageUrl ? currentUser.profileImageUrl : defaultProfile}
               className="md:w-full md:h-full object-cover"
             />
           </div>
@@ -130,6 +134,7 @@ const Profile = () => {
           ))}
         </div>
       </div>
+      <ToastContainer />
     </div>
   )
 }

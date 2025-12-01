@@ -19,7 +19,10 @@ const Login = () => {
       const res = await loginUser(form);
       setToken(res.data.token);
       setCurrentUser(res.data.user);
-      toast.success("Login Successfully!");
+      toast.success("Login Successful!", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
       navigate("/");
     } catch (error) {
       toast.error(`Login failed: ${error.response.data}`, {
