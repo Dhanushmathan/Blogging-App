@@ -1,10 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPost, getAllCategories, getToken } from '../Services/api';
+import { toast } from 'react-toastify';
+import { useCurrentUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const CreatePost = () => {
+  const { currentUser } = useCurrentUser();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [categorys, setCategorys] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const naviagte = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getAllCategories(getToken());
+        setCategorys(res.data);
+      } catch (error) {
+        toast.error(`Failed to load categories : ${error.message}`);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleImage = (e) => {
     const file = e.target.files[0];
@@ -12,13 +33,41 @@ const CreatePost = () => {
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e) => {
-    
+  const handleSubmitPost = async (e) => {
+    e.preventDefault();
+
+    if (!title || !content || !categoryId) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("postImage", image);
+
+    try {
+      setIsLoading(true);
+      const res = await createPost(currentUser.id, categoryId, formData, getToken());
+      console.log(res.data);
+      toast.success("Post created successfully!", {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
+      naviagte('/');
+    } catch (error) {
+      toast.error(`Failed to create post: ${error.message}`, {
+        position: 'bottom-right',
+        autoClose: 3000
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-10">
-      <form className="max-w-3xl mx-auto bg-white p-4 md:p-8 rounded-xl shadow-lg">
+      <form className="max-w-3xl mx-auto bg-white p-4 md:p-8 rounded-xl shadow-lg" onSubmit={handleSubmitPost}>
         <h1 className="text-3xl font-bold mb-6">Create New Post</h1>
 
         {/* Image Upload */}
@@ -30,6 +79,7 @@ const CreatePost = () => {
             type="file"
             className="mt-2 w-full hidden"
             onChange={handleImage}
+            disabled={isLoading}
           />
         </label>
 
@@ -41,22 +91,36 @@ const CreatePost = () => {
         )}
 
         {/* Title */}
-        <input
-          type="text"
-          placeholder="Enter Post Title"
-          className="w-full p-3 border rounded-lg mb-4"
-        />
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+          <input
+            type="text"
+            placeholder="Enter Post Title"
+            className="p-3 border rounded-lg"
+            onChange={(e) => setTitle(e.target.value)}
+            disabled={isLoading}
+          />
+          <select className='p-3 border rounded-lg w-full' value={categoryId} onChange={(e) => setCategoryId(e.target.value)} disabled={isLoading}>
+            <option value="">Select Category</option>
+            {categorys.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Description */}
         <textarea
           placeholder="Write your description..."
           rows="6"
           className="w-full p-3 border rounded-lg mb-6"
+          onChange={(e) => setContent(e.target.value)}
+          disabled={isLoading}
         ></textarea>
 
         {/* Submit */}
-        <button className="w-full bg-blue-500 text-white py-3 rounded-lg font-bold hover:bg-blue-600">
-          Publish Post
+        <button type='submit' className="w-full bg-blue-500 text-white py-3 rounded-lg font-bold hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={isLoading}>
+          {isLoading ? 'Publishing...' : 'Publish Post'}
         </button>
       </form>
     </div>

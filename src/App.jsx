@@ -36,7 +36,9 @@ const App = () => {
         <Route path='/profile' element={
           <PrivateRoute>
             <Profile /> </PrivateRoute>} />
-        <Route path='/terms' element={<Terms />} />
+        <Route path='/terms' element={
+          <PrivateRoute>
+            <Terms /> </PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   )
