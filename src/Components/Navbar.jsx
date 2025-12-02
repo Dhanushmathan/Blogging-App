@@ -86,7 +86,7 @@ const Navbar = () => {
 
       {/* Mobile: hamburger */}
       <button
-        className="lg:hidden p-2 rounded-md text-slate-700 hover:bg-gray-100"
+        className="lg:hidden p-2 rounded-md text-slate-700 hover:bg-gray-100 cursor-pointer"
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((s) => !s)}
@@ -121,7 +121,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="text-lg font-bold text-slate-800">SparkNest</div>
           <button
-            className="p-2 rounded-md text-slate-700 hover:bg-gray-100"
+            className="p-2 rounded-md text-slate-700 hover:bg-gray-100 cursor-pointer"
             aria-label="Close menu"
             onClick={closeMenu}
           >
@@ -155,7 +155,7 @@ const Navbar = () => {
             </div>
           )
         }
-        <div className='mt-72'>
+        <div className='mt-80'>
           <button className='bg-red-500 text-white px-4 py-2 rounded-md w-full font-semibold cursor-pointer' title='Logout' onClick={logout}>LogOut</button>
         </div>
       </aside>

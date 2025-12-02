@@ -1,11 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import PostCard from '../Components/PostCard';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getToken } from '../Services/auth';
+import { getAllPosts } from '../Services/post';
+import { toast } from 'react-toastify';
 
 const Home = () => {
 
   const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     if (!getToken()) {
@@ -13,35 +16,31 @@ const Home = () => {
     }
   }, []);
 
-  const posts = [
-    {
-      id: 1,
-      title: "My First Blog",
-      desc: "This is a sample blog post description...",
-      img: "https://picsum.photos/600/400"
-    },
-    {
-      id: 2,
-      title: "React Learning Journey",
-      desc: "Understanding components and hooks...",
-      img: "https://picsum.photos/600/401"
-    },
-    {
-      id: 3,
-      title: "Spring Boot Tips",
-      desc: "Backend development made easier...",
-      img: "https://picsum.photos/600/402"
+  useEffect(() => {
+    const fetchAllPosts = async () => {
+      try {
+        const res = await getAllPosts(getToken());
+        setPosts(res.data);
+      } catch (error) {
+        toast.error(`Failed to load categories : ${error.message}`, {
+          position: "bottom-right",
+          autoClose: 3000
+        });
+      }
     }
-  ];
+    fetchAllPosts();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 px-10 py-10">
+    <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-4xl font-bold mb-6">Recent Posts</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {posts.map((p) => (
-          <PostCard key={p.id} title={p.title} desc={p.desc} img={p.img} />
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-3">
+        {
+          posts.map((p) => (
+            <PostCard key={p.id} post={p} />
+          ))
+        }
       </div>
     </div>
   )

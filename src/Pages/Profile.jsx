@@ -52,21 +52,6 @@ const Profile = () => {
     }
   }
 
-  const myPosts = [
-    {
-      id: 1,
-      title: "My Travel Blog",
-      desc: "An amazing place I visited...",
-      img: "https://picsum.photos/600/403"
-    },
-    {
-      id: 2,
-      title: "Tech Review",
-      desc: "Latest mobile unboxing...",
-      img: "https://picsum.photos/600/404"
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-100 p-3 md:p-10">
       <div className="max-w-4xl mx-auto">
@@ -129,9 +114,9 @@ const Profile = () => {
         <h2 className="text-2xl font-bold mb-4">My Posts</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {myPosts.map((p) => (
-            <PostCard key={p.id} title={p.title} desc={p.desc} img={p.img} />
-          ))}
+          {/* {myPosts.map((p) => (
+            <PostCard key={p.id} post={post} />
+          ))} */}
         </div>
       </div>
       <ToastContainer />

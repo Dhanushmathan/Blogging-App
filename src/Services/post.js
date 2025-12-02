@@ -14,6 +14,14 @@ export const createPost = async (userId, categoryId, postData, token) => {
     });
 }
 
+export const getAllPosts = async (token) => {
+    return POST_API.get('/', {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+}
+
 export const getToken = () => {
     return localStorage.getItem("token");
 }

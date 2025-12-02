@@ -37,8 +37,11 @@ const CreatePost = () => {
   const handleSubmitPost = async (e) => {
     e.preventDefault();
 
-    if (!title || !content || !categoryId) {
-      toast.error("Please fill in all required fields.");
+    if (!title || !content || !categoryId || !image) {
+      toast.error("Please fill in all required fields.", {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
       return;
     }
 
