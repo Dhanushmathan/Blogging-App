@@ -32,8 +32,8 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-4xl font-bold mb-6">Recent Posts</h1>
+    <div className="min-h-screen bg-gray-100 p-1 md:p-6">
+      <h1 className="text-4xl font-bold mt-6 mb-6 md:mt-0 md:mb-6">Recent Posts</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-3">
         {

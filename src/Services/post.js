@@ -22,6 +22,14 @@ export const getAllPosts = async (token) => {
     });
 }
 
+export const getUserPosts = async (userId, token) => {
+  return POST_API.get(`/user/${userId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+};
+
 export const getToken = () => {
     return localStorage.getItem("token");
 }

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PostCard from '../Components/PostCard';
 import { useCurrentUser } from '../context/UserContext';
 import { getToken, uploadProfileImage, updateUserProfile } from '../Services/api';
 import { toast, ToastContainer } from 'react-toastify';
 import defaultProfile from '../assets/img/defaultProfile.png';
+import { getAllPosts, getUserPosts } from '../Services/post';
 
 const Profile = () => {
 
@@ -11,6 +12,7 @@ const Profile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [form, setForm] = useState({ name: "" });
   const [imageLoading, setImageLoading] = useState(false);
+  const [myPosts, setMyPosts] = useState([]);
 
   const handleUploadImage = async (e) => {
     try {
@@ -43,7 +45,10 @@ const Profile = () => {
       const res = await updateUserProfile(currentUser.id, form, getToken());
       setCurrentUser(res.data);
       setIsEditModalOpen(false);
-      toast.success("Profile updated successfully!");
+      toast.success("Profile updated successfully!", {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
     } catch (error) {
       toast.error(`Profile update failed: ${error.response.data}`, {
         position: 'bottom-right',
@@ -51,6 +56,21 @@ const Profile = () => {
       });
     }
   }
+
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      try {
+        const res = await getUserPosts(currentUser.id, getToken());
+        setMyPosts(res.data);
+      } catch (error) {
+        toast.error(`Failed to load user posts : ${error.response.data || error.message}`, {
+          position: 'bottom-right',
+          autoClose: 3000,
+        });
+      }
+    }
+    fetchUserPosts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-3 md:p-10">
@@ -114,9 +134,11 @@ const Profile = () => {
         <h2 className="text-2xl font-bold mb-4">My Posts</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* {myPosts.map((p) => (
-            <PostCard key={p.id} post={post} />
-          ))} */}
+          {
+            myPosts.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))
+          }
         </div>
       </div>
       <ToastContainer />
