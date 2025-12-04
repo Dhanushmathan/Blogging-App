@@ -1,8 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import defaultProfile from '../assets/img/defaultProfile.png';
+import { getToken, toggleLike } from '../Services/post';
+import { toast, ToastContainer } from 'react-toastify';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, user, onUpdate }) => {
   const [show, setShow] = useState(false);
+  const [likes, setLikes] = useState(post.likeCount);
+  const [liked, setLiked] = useState(false);
+  const [doubleLike, setDoubleLike] = useState(false);
+
+  useEffect(() => {
+    setLikes(post.likeCount);
+    setLiked(post.likedUsers === true);
+  }, [post.likeCount, post.likedUsers]);
 
   const getTimeAgo = (dateString) => {
     const now = new Date();
@@ -29,11 +39,56 @@ const PostCard = ({ post }) => {
     return 'just now';
   }
 
+  const handleLike = async () => {
+    try {
+      const res = await toggleLike(user.id, post.id, getToken());
+      const updatedLikeCount = res.data;
+
+      setLikes(updatedLikeCount);
+      setLiked(!liked);
+
+      if (onUpdate) {
+        onUpdate(post.id, updatedLikeCount, !liked);
+      }
+    } catch (error) {
+      toast.error(`Liked error : ${error.response.data || error.message}`, {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleDoubleLike = async () => {
+    try {
+      const res = await toggleLike(user.id, post.id, getToken());
+      const updatedLikeCount = res.data;
+
+      setLikes(updatedLikeCount);
+
+      if (!liked) {
+        setDoubleLike(true);
+        setTimeout(() => setDoubleLike(false), 600);
+      }
+
+      setLiked(!liked);
+
+      if (onUpdate) {
+        onUpdate(post.id, updatedLikeCount, !liked);
+      }
+    } catch (error) {
+      toast.error(`Liked error : ${error.response.data || error.message}`, {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
+    }
+  };
+
   return (
     <>
       <div className="bg-white text-black rounded-xl shadow-lg overflow-hidden">
         <div className="flex items-center gap-3 p-3 border-b border-gray-800">
           <img
+            loading='lazy'
             src={post.user?.profileImageUrl || defaultProfile}
             className="w-10 h-10 lg:w-16 lg:h-16 rounded-full object-cover border border-blue-500 p-0.5"
             alt="user"
@@ -51,13 +106,18 @@ const PostCard = ({ post }) => {
           </div>
         </div>
 
-        <div className="w-full overflow-hidden bg-black">
+        <div className="w-full overflow-hidden bg-black relative" onDoubleClick={handleDoubleLike}>
           <img
             src={post.imageUrl}
             alt="post"
             onClick={() => setShow(true)}
             className="w-full h-[350px] object-cover hover:scale-105 transition duration-300 cursor-pointer"
           />
+          {doubleLike && (
+            <div className="absolute inset-0 flex justify-center items-center animate-heart">
+              <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24" className='text-red-500'><path fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M2 9.137C2 14 6.02 16.591 8.962 18.911C10 19.729 11 20.5 12 20.5s2-.77 3.038-1.59C17.981 16.592 22 14 22 9.138S16.5.825 12 5.501C7.5.825 2 4.274 2 9.137" /></svg>
+            </div>
+          )}
         </div>
 
         {show && (
@@ -81,8 +141,13 @@ const PostCard = ({ post }) => {
         <div className="p-4">
           <div className='flex justify-between'>
             <ul className="flex gap-4 mb-3">
-              <li title='Like'>
-                <svg xmlns="http://www.w3.org/2000/svg" className='hover:cursor-pointer' width="1.5em" height="1.5em" viewBox="0 0 48 48"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M15 8C8.925 8 4 12.925 4 19c0 11 13 21 20 23.326C31 40 44 30 44 19c0-6.075-4.925-11-11-11c-3.72 0-7.01 1.847-9 4.674A10.99 10.99 0 0 0 15 8" /></svg>
+              <li title='Like' onClick={handleLike} className='post-like'>
+                {
+                  liked ?
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" className='text-red-500 hover:cursor-pointer'><path fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M2 9.137C2 14 6.02 16.591 8.962 18.911C10 19.729 11 20.5 12 20.5s2-.77 3.038-1.59C17.981 16.592 22 14 22 9.138S16.5.825 12 5.501C7.5.825 2 4.274 2 9.137" /></svg>
+                    :
+                    <svg xmlns="http://www.w3.org/2000/svg" className='hover:cursor-pointer' width="1.5em" height="1.5em" viewBox="0 0 48 48"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M15 8C8.925 8 4 12.925 4 19c0 11 13 21 20 23.326C31 40 44 30 44 19c0-6.075-4.925-11-11-11c-3.72 0-7.01 1.847-9 4.674A10.99 10.99 0 0 0 15 8" /></svg>
+                }
               </li>
               <li title='Comments'>
                 <svg xmlns="http://www.w3.org/2000/svg" className='hover:cursor-pointer' width="1.5em" height="1.5em" viewBox="0 0 640 640"><path fill="currentColor" d="M115.9 448.9C83.3 408.6 64 358.4 64 304C64 171.5 178.6 64 320 64s256 107.5 256 240s-114.6 240-256 240c-36.5 0-71.2-7.2-102.6-20L101 573.9c-3.7 1.6-7.5 2.1-11.5 2.1c-14.1 0-25.5-11.4-25.5-25.5c0-4.3 1.1-8.5 3.1-12.2zm37.3-30.2c12.2 15.1 14.1 36.1 4.8 53.2L140 505l58.5-25.1c11.8-5.1 25.2-5.2 37.1-.3c25.7 10.5 54.2 16.4 84.3 16.4c117.8 0 208-88.8 208-192S437.8 112 320 112s-208 88.8-208 192c0 42.8 15.1 82.4 41.2 114.7" /></svg>
@@ -98,7 +163,7 @@ const PostCard = ({ post }) => {
             </p>
           </div>
 
-          <span>{post.likeCount + " "} Likes</span>
+          <span>{likes} Likes</span>
 
           <p className="text-sm mb-2">
             <span className='font-semibold'>{post.user?.name + "_ "}</span>
@@ -106,7 +171,7 @@ const PostCard = ({ post }) => {
               {post.content.substring(0, 50)}...
             </span>
           </p>
-
+          <ToastContainer />
         </div>
       </div>
     </>

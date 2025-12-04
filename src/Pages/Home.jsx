@@ -2,11 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import PostCard from '../Components/PostCard';
 import { useEffect, useState } from 'react';
 import { getToken } from '../Services/auth';
-import { getAllPosts } from '../Services/post';
+import { getAllPosts, isLiked } from '../Services/post';
 import { toast } from 'react-toastify';
+import { useCurrentUser } from '../context/UserContext';
 
 const Home = () => {
-
+  const { currentUser } = useCurrentUser();
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
 
@@ -17,10 +18,23 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    if (!currentUser) return;
+
     const fetchAllPosts = async () => {
       try {
         const res = await getAllPosts(getToken());
-        setPosts(res.data);
+        const posts = res.data;
+
+        const updatedPosts = await Promise.all(
+          posts.map(async (post) => {
+            const likeRes = await isLiked(post.id, currentUser.id, getToken());
+            return {
+              ...post, likedUsers: likeRes.data
+            };
+          })
+        );
+
+        setPosts(updatedPosts);
       } catch (error) {
         toast.error(`Failed to load categories : ${error.message}`, {
           position: "bottom-right",
@@ -30,6 +44,16 @@ const Home = () => {
     }
     fetchAllPosts();
   }, []);
+  
+  const handlePostUpdate = (postId, newLikeCount, likedStatus) => {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? { ...p, likeCount: newLikeCount, likedUsers: likedStatus }
+          : p
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-1 md:p-6">
@@ -38,7 +62,7 @@ const Home = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-3">
         {
           posts.map((p) => (
-            <PostCard key={p.id} post={p} />
+            <PostCard key={p.id} post={p} user={currentUser} onUpdate={handlePostUpdate} />
           ))
         }
       </div>

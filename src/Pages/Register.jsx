@@ -97,6 +97,9 @@ const Register = () => {
         </p>
       </section>
       <ToastContainer />
+      <footer className='absolute -bottom-14 lg:bottom-5 w-full text-center py-4 text-sm font-semibold'>
+        <p>&copy; {currentDate.getFullYear()} Blog App. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

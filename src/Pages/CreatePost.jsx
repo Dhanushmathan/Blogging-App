@@ -122,7 +122,7 @@ const CreatePost = () => {
         ></textarea>
 
         {/* Submit */}
-        <button type='submit' className="w-full bg-blue-500 text-white py-3 rounded-lg font-bold hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={isLoading}>
+        <button type='submit' className="w-full cursor-pointer bg-blue-500 text-white py-3 rounded-lg font-bold hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={isLoading}>
           {isLoading ? 'Publishing...' : 'Publish Post'}
         </button>
       </form>
