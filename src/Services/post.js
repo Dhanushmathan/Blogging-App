@@ -10,6 +10,11 @@ const LIKE_API = axios.create({
     withCredentials: true,
 });
 
+const COM_API = axios.create({
+    baseURL: 'http://localhost:8080/api/comments',
+    withCredentials: true,
+});
+
 export const createPost = async (userId, categoryId, postData, token) => {
     return POST_API.post(`/${userId}/${categoryId}`, postData, {
         headers: {
@@ -48,8 +53,25 @@ export const isLiked = async (postId, userId, token) => {
         headers: {
             'Authorization': `Bearer ${token}`
         }
-    })
-}
+    });
+};
+
+export const addComments = async (postId, userId, comment, token) => {
+    return COM_API.post(`/post/${postId}/user/${userId}`, { content: comment }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+};
+
+export const getCommentByPostId = (postId, token) => {
+    return COM_API.get(`/post/${postId}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+};
 
 export const getToken = () => {
     return localStorage.getItem("token");
