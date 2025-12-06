@@ -155,7 +155,7 @@ const Navbar = () => {
             </div>
           )
         }
-        <div className='mt-80'>
+        <div className='mt-72'>
           <button className='bg-red-500 text-white px-4 py-2 rounded-md w-full font-semibold cursor-pointer' title='Logout' onClick={logout}>LogOut</button>
         </div>
       </aside>

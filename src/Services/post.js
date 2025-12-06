@@ -73,6 +73,23 @@ export const getCommentByPostId = (postId, token) => {
     });
 };
 
+export const updatedComment = (commentId, userId, content, token) => {
+    return COM_API.put(`/${commentId}/user/${userId}`, { content:content.newText }, {
+        headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`
+        }
+    });
+}
+
+export const deleteComment = (commentId, token) => {
+    return COM_API.delete(`/${commentId}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+}
+
 export const getToken = () => {
     return localStorage.getItem("token");
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getCommentByPostId, getToken } from '../../Services/post';
+import { deleteComment, getCommentByPostId, getToken, updatedComment } from '../../Services/post';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
+import { toast } from 'react-toastify';
 
 const CommentList = ({ close, post }) => {
 
@@ -22,6 +23,41 @@ const CommentList = ({ close, post }) => {
         fetchComments();
     }, []);
 
+    const handleEdit = async (comment) => {
+        const newText = prompt("Edit your comment", comment.content);
+        if (!newText) return;
+
+        try {
+            await updatedComment(comment.id, comment.userId, { newText }, getToken());
+            fetchComments();
+            toast.success("Comment updated", {
+                position: 'bottom-right',
+                autoClose: 3000,
+            });
+        } catch (error) {
+            toast.error("Update failed ❌", {
+                position: 'bottom-right',
+                autoClose: 3000,
+            });
+        }
+    }
+
+    const handleDelete = async (comment) => {
+        try {
+            await deleteComment(comment.id, getToken());
+            fetchComments();
+            toast.success("Comment Delete", {
+                position: 'bottom-right',
+                autoClose: 3000,
+            });
+        } catch (error) {
+            toast.error("Delete failed ❌", {
+                position: 'bottom-right',
+                autoClose: 3000,
+            });
+        }
+    }
+
     return (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-end z-50">
             {/* Slide panel */}
@@ -40,7 +76,7 @@ const CommentList = ({ close, post }) => {
                 <div className="px-4 pb-20 overflow-y-auto h-full">
                     {
                         comments.map((c) => (
-                            <CommentItem key={c.id} comment={c} />
+                            <CommentItem key={c.id} comment={c} onEdit={handleEdit} onDelete={handleDelete} />
                         ))
                     }
                 </div>
