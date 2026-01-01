@@ -60,7 +60,6 @@ const CommentList = ({ close, post }) => {
 
     return (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-end z-50">
-            {/* Slide panel */}
             <div className="bg-white w-full max-w-md h-[85%] rounded-t-2xl animate-slideUp">
                 {/* Top Bar */}
                 <div className="pt-4 text-center border-b border-white/10 relative">

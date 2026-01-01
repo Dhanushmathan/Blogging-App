@@ -27,6 +27,14 @@ export const updateUserProfile = async (userId, profileData, token) => {
     });
 }
 
+export const getAllUsers = async (token) => {
+    return API.get(`/`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
 export const getAllCategories = async (token) => {
     return CAT_API.get('/', {
         headers: {
